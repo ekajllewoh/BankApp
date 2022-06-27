@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.revature.models.Role;
@@ -76,8 +77,44 @@ public class UserDao implements IUserDao{
 	}
 
 	public User findById(int id) {
-		// TODO Auto-generated method stub
-		return null;
+		User u = new User();
+		
+		// Try with Resources to connect and work with database
+		
+		try (Connection conn = ConnectionUtil.getConnection()){
+			
+			String sql = "SELECT * FROM users WHERE id = ?";
+			
+			PreparedStatement stmt = conn.prepareStatement(sql);
+			
+			stmt.setInt(1, id);
+			
+			ResultSet rs;
+			
+			if ((rs = stmt.executeQuery()) != null) {
+				
+				// Move the cursor forward
+				rs.next();
+				
+				int returnedId = rs.getInt("id");
+				String username = rs.getString("username");
+				String password = rs.getString("pwd");
+				Role role = Role.valueOf(rs.getString("user_role"));
+				
+				u.setId(returnedId);
+				u.setUsername(username);
+				u.setPassword(password);
+				u.setRole(role);
+				
+			} 
+		} catch (SQLException e) {
+			System.out.println("SQL Exception Thrown - can't retrieve user from DB");
+			e.printStackTrace();
+		}
+		
+		
+		return u;
+
 	}
 
 	public User findByUsername(String username) {
@@ -124,8 +161,36 @@ public class UserDao implements IUserDao{
 	}
 
 	public List<User> findAll() {
-		// TODO Auto-generated method stub
-		return null;
+		List<User> u = new ArrayList<>();
+		try (Connection conn = ConnectionUtil.getConnection()){
+		PreparedStatement stmt = conn.prepareStatement("SELECT * FROM users");
+		ResultSet rs = stmt.executeQuery();
+		while (rs.next()) {
+			if ((rs = stmt.executeQuery()) != null) {
+			
+			rs.next();
+			
+			int id = rs.getInt("id");
+			String username = rs.getString("username");
+			String password = rs.getString("pwd");
+			Role role = Role.valueOf(rs.getString("user_role"));
+			
+			User tempUser = new User();
+			
+			tempUser.setId(id);
+			tempUser.setUsername(username);
+			tempUser.setPassword(password);
+			tempUser.setRole(role);
+			
+			u.add(tempUser);
+			}
+		}
+		}catch (SQLException e) {
+			System.out.println("SQL Exception Thrown - can't retrieve all users from DB");
+			e.printStackTrace();
+		}
+		
+		return u;
 	}
 
 	public boolean update(User u) {
