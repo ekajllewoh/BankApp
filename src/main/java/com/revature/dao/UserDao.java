@@ -194,12 +194,74 @@ public class UserDao implements IUserDao{
 	}
 
 	public boolean update(User u) {
-		// TODO Auto-generated method stub
+
+		// Let's instantiate a user to hold our retrieved user
+		
+		int userId = u.getId();
+		String userName = u.getUsername();
+		String userPwd = u.getPassword();
+		
+		
+		// Try with Resources to connect and work with database
+		
+		try (Connection conn = ConnectionUtil.getConnection()){
+			
+			String sql = "UPDATE * SET username = ?, pwd = ? WHERE id = ?";
+			
+			PreparedStatement stmt = conn.prepareStatement(sql);
+			
+			stmt.setString(1, userName);
+			stmt.setString(2, userPwd);
+			stmt.setInt(3, userId);
+			
+			stmt.executeQuery(sql);
+			
+//			ResultSet rs;
+//			
+//			if ((rs = stmt.executeQuery()) != null) {
+//				
+//				// Move the cursor forward
+//				rs.next();
+//				
+//				
+//				
+//				int id = rs.getInt("id");
+//				String returnedUsername = rs.getString("username");
+//				String password = rs.getString("pwd");
+//				Role role = Role.valueOf(rs.getString("user_role"));
+//				
+//				u.setId(id);
+//				u.setUsername(returnedUsername);
+//				u.setPassword(password);
+//				u.setRole(role);
+				return true;
+//			} 
+		} catch (SQLException e) {
+			System.out.println("SQL Exception Thrown - can't update user from DB");
+			e.printStackTrace();
+		}
 		return false;
 	}
 
-	public boolean delete(int id) {
-		// TODO Auto-generated method stub
+	public boolean delete(int id) {		
+		
+		// Try with Resources to connect and work with database
+		
+		try (Connection conn = ConnectionUtil.getConnection()){
+			
+			String sql = "DELETE FROM users WHERE id = ?";
+			
+			PreparedStatement stmt = conn.prepareStatement(sql);
+			
+			stmt.setInt(1, id);
+			
+			return true;
+			
+		} catch (SQLException e) {
+			System.out.println("SQL Exception Thrown - can't delete user from DB");
+			e.printStackTrace();
+		}
+		
 		return false;
 	}
 
