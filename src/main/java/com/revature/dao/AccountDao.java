@@ -205,7 +205,7 @@ public class AccountDao implements IAccountDao {
 			stmt.setDouble(3, accountBalance);
 			stmt.setInt(4, accountId);
 
-			stmt.executeQuery(sql);
+			ResultSet rs = stmt.executeQuery();
 
 //		ResultSet rs;
 //		
@@ -228,7 +228,7 @@ public class AccountDao implements IAccountDao {
 			return true;
 //		} 
 		} catch (SQLException e) {
-			System.out.println("SQL Exception Thrown - can't update user from DB");
+			System.out.println("SQL Exception Thrown - can't update account from DB");
 			e.printStackTrace();
 		}
 		return false;

@@ -1,5 +1,7 @@
 package com.revature.service;
 
+import org.apache.log4j.Logger;
+
 import com.revature.dao.AccountDao;
 import com.revature.dao.IAccountDao;
 import com.revature.dao.IUserDao;
@@ -12,6 +14,7 @@ public class UserService {
 
 	public IUserDao udao = new UserDao();
 	public IAccountDao adao = new AccountDao();
+	Logger logger = Logger.getLogger(UserService.class);
 
 	public User register(User u) {
 
@@ -37,6 +40,8 @@ public class UserService {
 		}
 
 		System.out.println("Successfully registered user with the Id of " + u.getId());
+		
+		logger.info("Created user account with Id " + u.getId());
 
 		return u;
 	}

@@ -126,6 +126,8 @@ public class AccountService {
 		Account a = adao.findById(id2);
 		
 		return id == a.getAccOwner();
+		
+		
 	}
 	
 	public boolean checkActiveAccount(int id) {
@@ -141,6 +143,28 @@ public class AccountService {
 		Account a = adao.findById(id);
 		
 		return a.getBalance();
+		
+	}
+	
+	public void setAccActive(int id, boolean activity) {
+		
+		Account a = adao.findById(id);
+		
+		a.setActive(activity);
+		
+		adao.update(a);
+		
+		logger.info("Changed active status of account " + id);
+		
+	}
+	
+	public void deleteAcc(int id) {
+		
+		Account a = adao.findById(id);
+		
+		adao.delete(a);
+		
+		logger.info("Deleted account " + id);
 		
 	}
 	
