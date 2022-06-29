@@ -73,9 +73,9 @@ public class AccountService {
 		if(money >= 0) {
 		Account a = adao.findById(id);
 		
-		logger.info("Withdrawing $" + money + " to account " + id);
+		logger.info("Withdrawing $" + money + " from account " + id);
 		
-		money = money - a.getBalance();
+		money = a.getBalance() - money;
 		
 		a.setBalance(money);
 		
@@ -90,13 +90,12 @@ public class AccountService {
 		
 		if(money >= 0) {
 		Account a = adao.findById(id);
+		Account b = adao.findById(id2);
 		
 		logger.info("Sending $" + money + " from account " + id + " to account " + id2);
 		
-		money = money - a.getBalance();
-		
-		a.setBalance(money);
-		
+		a.setBalance(a.getBalance() - money);
+		b.setBalance(b.getBalance() + money);
 		adao.update(a);
 		}else {
 			System.out.println("You can't transfer a negative amount.");
