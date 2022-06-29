@@ -1,0 +1,11 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+BankApp,com.revature.dao,AccountDao,311,3,8,0,98,1,10,1,6,1
+BankApp,com.revature.dao,UserDao,331,3,10,0,103,1,11,1,6,1
+BankApp,com.revature.models,User,213,38,36,0,50,16,27,7,9,7
+BankApp,com.revature.models,Role,0,34,0,0,0,4,0,1,0,1
+BankApp,com.revature.models,Account,183,0,16,0,50,0,22,0,14,0
+BankApp,com.revature,App,536,0,70,0,148,0,39,0,4,0
+BankApp,com.revature.service,UserService,2,89,2,6,1,18,2,5,0,3
+BankApp,com.revature.service,AccountService,303,0,12,0,64,0,19,0,13,0
+BankApp,com.revature.util,ConnectionUtil,45,0,4,0,18,0,4,0,2,0
+BankApp,com.revature.exceptions,RegisterUserFailedException,0,4,0,0,0,2,0,1,0,1

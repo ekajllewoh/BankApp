@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserDao.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">BankApp</a> &gt; <a href="index.source.html" class="el_package">com.revature.dao</a> &gt; <span class="el_source">UserDao.java</span></div><h1>UserDao.java</h1><pre class="source lang-java linenums">package com.revature.dao;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.revature.models.Role;
+import com.revature.models.User;
+import com.revature.util.ConnectionUtil;
+
+<span class="fc" id="L15">public class UserDao implements IUserDao{</span>
+
+	
+	public int insert(User u) {
+		// Let's use insert to practice creating a SQL operation
+		
+		// Step 1. Capture the DB connection by using the connection util
+		
+<span class="nc" id="L23">		Connection conn = ConnectionUtil.getConnection(); // Pulls in current connection from connection util</span>
+		
+		// Step 2. Generate a sql statement like &quot;Insert into .....&quot;
+		
+		// Use ? to represent data we're looking to enter into our sql statment
+<span class="nc" id="L28">		String sql = &quot;INSERT INTO users (username, pwd, user_role) values (?, ?, ?) RETURNING users.id&quot;;</span>
+		
+		// Step 2b. Use a prepared statement to avoid SQL injection
+		try {
+<span class="nc" id="L32">			PreparedStatement stmt = conn.prepareStatement(sql);</span>
+			
+			// Start process to set the values we're entering into the DB
+			
+			// Go through each ? and give it a values
+			
+			// Let's start with username
+<span class="nc" id="L39">			stmt.setString(1, u.getUsername());</span>
+			
+			// Let's do the password as well
+<span class="nc" id="L42">			stmt.setString(2, u.getPassword());</span>
+			
+			// User role will be handled slightly since it's a java enum
+<span class="nc" id="L45">			stmt.setObject(3, u.getRole(), Types.OTHER);</span>
+			
+			// Use a resultset to extract the primary key from the user object that was persisted
+			
+			ResultSet rs;
+			
+<span class="nc bnc" id="L51" title="All 2 branches missed.">			if ((rs = stmt.executeQuery()) != null) {</span>
+				
+				// if we return data, we can iterate over it
+				
+<span class="nc" id="L55">				rs.next();</span>
+				
+				// We need to capture the first column of data return (which is the id of the return user object)
+				
+<span class="nc" id="L59">				int id = rs.getInt(1); </span>
+				
+<span class="nc" id="L61">				System.out.println(&quot;We returned a user with id #&quot; + id);</span>
+				
+<span class="nc" id="L63">				return id;</span>
+			}
+			
+			
+			
+			
+<span class="nc" id="L69">		} catch (SQLException e) {</span>
+<span class="nc" id="L70">			System.out.println(&quot;Unable to insert user - sql exception&quot;);</span>
+<span class="nc" id="L71">			e.printStackTrace();</span>
+<span class="nc" id="L72">		}</span>
+		
+		// If our database fails to enter someone in we should return an index that we know our DB could never generate
+		
+<span class="nc" id="L76">		return -1;</span>
+	}
+
+	public User findById(int id) {
+<span class="nc" id="L80">		User u = new User();</span>
+		
+		// Try with Resources to connect and work with database
+		
+<span class="nc" id="L84">		try (Connection conn = ConnectionUtil.getConnection()){</span>
+			
+<span class="nc" id="L86">			String sql = &quot;SELECT * FROM users WHERE id = ?&quot;;</span>
+			
+<span class="nc" id="L88">			PreparedStatement stmt = conn.prepareStatement(sql);</span>
+			
+<span class="nc" id="L90">			stmt.setInt(1, id);</span>
+			
+			ResultSet rs;
+			
+<span class="nc bnc" id="L94" title="All 2 branches missed.">			if ((rs = stmt.executeQuery()) != null) {</span>
+				
+				// Move the cursor forward
+<span class="nc" id="L97">				rs.next();</span>
+				
+<span class="nc" id="L99">				int returnedId = rs.getInt(&quot;id&quot;);</span>
+<span class="nc" id="L100">				String username = rs.getString(&quot;username&quot;);</span>
+<span class="nc" id="L101">				String password = rs.getString(&quot;pwd&quot;);</span>
+<span class="nc" id="L102">				Role role = Role.valueOf(rs.getString(&quot;user_role&quot;));</span>
+				
+<span class="nc" id="L104">				u.setId(returnedId);</span>
+<span class="nc" id="L105">				u.setUsername(username);</span>
+<span class="nc" id="L106">				u.setPassword(password);</span>
+<span class="nc" id="L107">				u.setRole(role);</span>
+				
+			} 
+<span class="nc" id="L110">		} catch (SQLException e) {</span>
+<span class="nc" id="L111">			System.out.println(&quot;SQL Exception Thrown - can't retrieve user from DB&quot;);</span>
+<span class="nc" id="L112">			e.printStackTrace();</span>
+<span class="nc" id="L113">		}</span>
+		
+		
+<span class="nc" id="L116">		return u;</span>
+
+	}
+
+	public User findByUsername(String username) {
+		
+		// Let's instantiate a user to hold our retrieved user
+		
+<span class="nc" id="L124">		User u = new User();</span>
+		
+		// Try with Resources to connect and work with database
+		
+<span class="nc" id="L128">		try (Connection conn = ConnectionUtil.getConnection()){</span>
+			
+<span class="nc" id="L130">			String sql = &quot;SELECT * FROM users WHERE username = ?&quot;;</span>
+			
+<span class="nc" id="L132">			PreparedStatement stmt = conn.prepareStatement(sql);</span>
+			
+<span class="nc" id="L134">			stmt.setString(1, username);</span>
+			
+			ResultSet rs;
+			
+<span class="nc bnc" id="L138" title="All 2 branches missed.">			if ((rs = stmt.executeQuery()) != null) {</span>
+				
+				// Move the cursor forward
+<span class="nc" id="L141">				rs.next();</span>
+				
+<span class="nc" id="L143">				int id = rs.getInt(&quot;id&quot;);</span>
+<span class="nc" id="L144">				String returnedUsername = rs.getString(&quot;username&quot;);</span>
+<span class="nc" id="L145">				String password = rs.getString(&quot;pwd&quot;);</span>
+<span class="nc" id="L146">				Role role = Role.valueOf(rs.getString(&quot;user_role&quot;));</span>
+				
+<span class="nc" id="L148">				u.setId(id);</span>
+<span class="nc" id="L149">				u.setUsername(returnedUsername);</span>
+<span class="nc" id="L150">				u.setPassword(password);</span>
+<span class="nc" id="L151">				u.setRole(role);</span>
+				
+			} 
+<span class="nc" id="L154">		} catch (SQLException e) {</span>
+<span class="nc" id="L155">			System.out.println(&quot;SQL Exception Thrown - can't retrieve user from DB&quot;);</span>
+<span class="nc" id="L156">			e.printStackTrace();</span>
+<span class="nc" id="L157">		}</span>
+		
+		
+<span class="nc" id="L160">		return u;</span>
+	}
+
+	public List&lt;User&gt; findAll() {
+<span class="nc" id="L164">		List&lt;User&gt; u = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L165">		try (Connection conn = ConnectionUtil.getConnection()){</span>
+<span class="nc" id="L166">		PreparedStatement stmt = conn.prepareStatement(&quot;SELECT * FROM users&quot;);</span>
+<span class="nc" id="L167">		ResultSet rs = stmt.executeQuery();</span>
+<span class="nc bnc" id="L168" title="All 2 branches missed.">		while (rs.next()) {</span>
+<span class="nc bnc" id="L169" title="All 2 branches missed.">			if ((rs = stmt.executeQuery()) != null) {</span>
+			
+<span class="nc" id="L171">			rs.next();</span>
+			
+<span class="nc" id="L173">			int id = rs.getInt(&quot;id&quot;);</span>
+<span class="nc" id="L174">			String username = rs.getString(&quot;username&quot;);</span>
+<span class="nc" id="L175">			String password = rs.getString(&quot;pwd&quot;);</span>
+<span class="nc" id="L176">			Role role = Role.valueOf(rs.getString(&quot;user_role&quot;));</span>
+			
+<span class="nc" id="L178">			User tempUser = new User();</span>
+			
+<span class="nc" id="L180">			tempUser.setId(id);</span>
+<span class="nc" id="L181">			tempUser.setUsername(username);</span>
+<span class="nc" id="L182">			tempUser.setPassword(password);</span>
+<span class="nc" id="L183">			tempUser.setRole(role);</span>
+			
+<span class="nc" id="L185">			u.add(tempUser);</span>
+<span class="nc" id="L186">			}</span>
+		}
+<span class="nc" id="L188">		}catch (SQLException e) {</span>
+<span class="nc" id="L189">			System.out.println(&quot;SQL Exception Thrown - can't retrieve all users from DB&quot;);</span>
+<span class="nc" id="L190">			e.printStackTrace();</span>
+<span class="nc" id="L191">		}</span>
+		
+<span class="nc" id="L193">		return u;</span>
+	}
+
+	public boolean update(User u) {
+
+		// Let's instantiate a user to hold our retrieved user
+		
+<span class="nc" id="L200">		int userId = u.getId();</span>
+<span class="nc" id="L201">		String userName = u.getUsername();</span>
+<span class="nc" id="L202">		String userPwd = u.getPassword();</span>
+		
+		
+		// Try with Resources to connect and work with database
+		
+<span class="nc" id="L207">		try (Connection conn = ConnectionUtil.getConnection()){</span>
+			
+<span class="nc" id="L209">			String sql = &quot;UPDATE users SET username = ?, pwd = ? WHERE id = ?&quot;;</span>
+			
+<span class="nc" id="L211">			PreparedStatement stmt = conn.prepareStatement(sql);</span>
+			
+<span class="nc" id="L213">			stmt.setString(1, userName);</span>
+<span class="nc" id="L214">			stmt.setString(2, userPwd);</span>
+<span class="nc" id="L215">			stmt.setInt(3, userId);</span>
+			
+<span class="nc" id="L217">			stmt.executeQuery(sql);</span>
+			
+//			ResultSet rs;
+//			
+//			if ((rs = stmt.executeQuery()) != null) {
+//				
+//				// Move the cursor forward
+//				rs.next();
+//				
+//				
+//				
+//				int id = rs.getInt(&quot;id&quot;);
+//				String returnedUsername = rs.getString(&quot;username&quot;);
+//				String password = rs.getString(&quot;pwd&quot;);
+//				Role role = Role.valueOf(rs.getString(&quot;user_role&quot;));
+//				
+//				u.setId(id);
+//				u.setUsername(returnedUsername);
+//				u.setPassword(password);
+//				u.setRole(role);
+<span class="nc" id="L237">				return true;</span>
+//			} 
+<span class="nc" id="L239">		} catch (SQLException e) {</span>
+<span class="nc" id="L240">			System.out.println(&quot;SQL Exception Thrown - can't update user from DB&quot;);</span>
+<span class="nc" id="L241">			e.printStackTrace();</span>
+		}
+<span class="nc" id="L243">		return false;</span>
+	}
+
+	public boolean delete(int id) {		
+		
+		// Try with Resources to connect and work with database
+		
+<span class="nc" id="L250">		try (Connection conn = ConnectionUtil.getConnection()){</span>
+			
+<span class="nc" id="L252">			String sql = &quot;DELETE FROM users WHERE id = ?&quot;;</span>
+			
+<span class="nc" id="L254">			PreparedStatement stmt = conn.prepareStatement(sql);</span>
+			
+<span class="nc" id="L256">			stmt.setInt(1, id);</span>
+			
+<span class="nc" id="L258">			return true;</span>
+			
+<span class="nc" id="L260">		} catch (SQLException e) {</span>
+<span class="nc" id="L261">			System.out.println(&quot;SQL Exception Thrown - can't delete user from DB&quot;);</span>
+<span class="nc" id="L262">			e.printStackTrace();</span>
+		}
+		
+<span class="nc" id="L265">		return false;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ConnectionUtil.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">BankApp</a> &gt; <a href="index.source.html" class="el_package">com.revature.util</a> &gt; <span class="el_source">ConnectionUtil.java</span></div><h1>ConnectionUtil.java</h1><pre class="source lang-java linenums">package com.revature.util;
+
+import java.io.FileReader;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.Properties;
+
+public class ConnectionUtil {
+	
+<span class="nc" id="L11">	private static Connection conn = null;</span>
+	
+	private ConnectionUtil() {
+	}
+	
+	public static Connection getConnection() {
+		//Check if there is a connection instance
+		//if there is then return it
+		
+		try {
+<span class="nc bnc" id="L21" title="All 4 branches missed.">			if(conn != null &amp;&amp; !conn.isClosed()) {</span>
+<span class="nc" id="L22">				System.out.println(&quot;Using a previously made connection&quot;);</span>
+<span class="nc" id="L23">				return conn;</span>
+			}
+<span class="nc" id="L25">		} catch (SQLException e) {</span>
+			// TODO Auto-generated catch block
+<span class="nc" id="L27">			e.printStackTrace();</span>
+<span class="nc" id="L28">			return null;</span>
+<span class="nc" id="L29">		}</span>
+		
+		//if not we'll set one up
+		
+		//this is the not secure method
+		
+		//this will change with cloud services
+//		String url = &quot;jdbc:postgresql://localhost:5432/postgres?currentSchema=bank&quot;;
+//		String username = &quot;postgres&quot;;
+//		String password = &quot;postgres&quot;;
+//		
+//		try {
+//			conn = DriverManager.getConnection(url, username, password);
+//			System.out.println(&quot;Established connection to database!&quot;);
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			System.out.println(&quot;Cannot establish connection&quot;);
+//			e.printStackTrace();
+//		}
+//		
+//		String url = &quot;&quot;;
+//		String username = &quot;&quot;;
+//		String password = &quot;&quot;;
+//		
+//		Properties prop = new Properties();
+		
+//		try {
+//			
+//			prop.load(new FileReader(&quot;C:\\Users\\ekajl\\Documents\\workspace-spring-tool-suite-4-4.14.1.RELEASE\\JDBCDemo\\src\\main\\resources\\application.properties&quot;));
+//			
+//			url = prop.getProperty(&quot;url&quot;);
+//			username = prop.getProperty(&quot;username&quot;);
+//			password = prop.getProperty(&quot;password&quot;);
+//			
+//			conn = DriverManager.getConnection(url, username, password);
+//			System.out.println(&quot;Established connection to database!&quot;);
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			System.out.println(&quot;Cannot establish connection&quot;);
+//			e.printStackTrace();
+//		} catch (FileNotFoundException e) {
+//			System.out.println(&quot;Cannot find properties file&quot;);
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			System.out.println(&quot;Something's wrong with the properties file&quot;);
+//			e.printStackTrace();
+//		}
+//		
+		
+<span class="nc" id="L78">		String url = System.getenv(&quot;DB_URL&quot;);</span>
+<span class="nc" id="L79">		String username = System.getenv(&quot;DB_USERNAME&quot;);</span>
+<span class="nc" id="L80">		String password = System.getenv(&quot;DB_PASSWORD&quot;);</span>
+		
+		try {
+<span class="nc" id="L83">			conn = DriverManager.getConnection(url, username, password);</span>
+<span class="nc" id="L84">			System.out.println(&quot;Established connection to database!&quot;);</span>
+<span class="nc" id="L85">		} catch (SQLException e) {</span>
+			// TODO Auto-generated catch block
+<span class="nc" id="L87">			System.out.println(&quot;Cannot establish connection&quot;);</span>
+<span class="nc" id="L88">			e.printStackTrace();</span>
+<span class="nc" id="L89">		}</span>
+		
+		
+		
+<span class="nc" id="L93">		return conn;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

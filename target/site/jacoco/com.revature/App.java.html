@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>App.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">BankApp</a> &gt; <a href="index.source.html" class="el_package">com.revature</a> &gt; <span class="el_source">App.java</span></div><h1>App.java</h1><pre class="source lang-java linenums">package com.revature;
+
+import java.util.Scanner;
+
+import com.revature.models.Role;
+import com.revature.models.User;
+import com.revature.service.AccountService;
+import com.revature.service.UserService;
+
+<span class="nc" id="L10">public class App {</span>
+
+<span class="nc" id="L12">	static Scanner scan = new Scanner(System.in);</span>
+
+	public static void main(String[] args) {
+
+<span class="nc" id="L16">		AccountService as = new AccountService();</span>
+<span class="nc" id="L17">		as.viewAllAccounts();</span>
+
+<span class="nc" id="L19">		run();</span>
+<span class="nc" id="L20">	}</span>
+
+	public static void run() {
+<span class="nc" id="L23">		System.out.println(&quot;Welcome to our bank!&quot;);</span>
+
+<span class="nc" id="L25">		UserService us = new UserService();</span>
+
+<span class="nc" id="L27">		System.out.println(&quot;Press 1 if you are an existing user.&quot;);</span>
+
+<span class="nc" id="L29">		System.out.println(&quot;Press 2 if you'd like to register.&quot;);</span>
+
+<span class="nc" id="L31">		int input = scan.nextInt();</span>
+
+<span class="nc bnc" id="L33" title="All 2 branches missed.">		if (input == 1) {</span>
+
+<span class="nc" id="L35">			System.out.println(&quot;Please enter your username&quot;);</span>
+
+<span class="nc" id="L37">			String username = scan.next();</span>
+
+<span class="nc" id="L39">			System.out.println(&quot;Please enter your password&quot;);</span>
+
+<span class="nc" id="L41">			String password = scan.next();</span>
+
+<span class="nc" id="L43">			User loggedInUser = us.login(username, password);</span>
+
+<span class="nc" id="L45">			System.out.println(&quot;Welcome to your account: &quot; + loggedInUser.getUsername());</span>
+
+<span class="nc" id="L47">			AccountService as = new AccountService();</span>
+			
+<span class="nc bnc" id="L49" title="All 2 branches missed.">			System.out.println(loggedInUser.getRole() == Role.Customer);</span>
+			
+<span class="nc bnc" id="L51" title="All 2 branches missed.">			if(loggedInUser.getRole() == Role.Customer) {</span>
+
+<span class="nc" id="L53">			System.out.println(&quot;If you would like to open an account press 1, if you would like to view your accounts press 2. Press 0 to close.&quot;);</span>
+
+<span class="nc" id="L55">			int existingAccountInput = -1;</span>
+
+<span class="nc bnc" id="L57" title="All 2 branches missed.">			while (existingAccountInput != 0) {</span>
+
+<span class="nc" id="L59">				existingAccountInput = scan.nextInt();</span>
+
+<span class="nc bnc" id="L61" title="All 2 branches missed.">				if (existingAccountInput == 1) {</span>
+<span class="nc" id="L62">					int newAccId = as.createAccount(loggedInUser.getId());</span>
+<span class="nc" id="L63">					System.out.println(&quot;Created account with id &quot; + newAccId);</span>
+<span class="nc" id="L64">					System.out.println(&quot;Please wait for administrator approval to activate your account.&quot;);</span>
+<span class="nc bnc" id="L65" title="All 2 branches missed.">				} else if (existingAccountInput == 2) {</span>
+<span class="nc" id="L66">					System.out.println(&quot;Here are your accounts: &quot;);</span>
+<span class="nc" id="L67">					as.viewAllAccounts(loggedInUser.getId());</span>
+<span class="nc" id="L68">					System.out.println(&quot;Select an account by its ID for a withdrawal, deposit or transfer.&quot;);</span>
+<span class="nc" id="L69">					int accountOption = scan.nextInt(); </span>
+					
+<span class="nc bnc" id="L71" title="All 2 branches missed.">					if(as.checkAccount(loggedInUser.getId(), accountOption)) {</span>
+						
+<span class="nc bnc" id="L73" title="All 2 branches missed.">						if(as.checkActiveAccount(accountOption)) {</span>
+							
+<span class="nc" id="L75">							System.out.println(&quot;Select 1 for withdrawl, 2 for deposit, 3 for transfer.&quot;);</span>
+<span class="nc" id="L76">							int moneyMover = scan.nextInt();</span>
+							
+<span class="nc bnc" id="L78" title="All 2 branches missed.">							if(moneyMover == 1) {</span>
+<span class="nc" id="L79">								System.out.println(&quot;How much do you wish to withdraw?&quot;);</span>
+<span class="nc" id="L80">								double moneyAmount = scan.nextDouble();</span>
+								
+<span class="nc bnc" id="L82" title="All 2 branches missed.">								if(moneyAmount &gt; as.checkBalance(accountOption)) {</span>
+<span class="nc" id="L83">									as.addMoneyToAccount(accountOption, moneyMover);</span>
+								}else {
+<span class="nc" id="L85">									System.out.println(&quot;Please do not overdraft.&quot;);</span>
+								}
+								
+								
+<span class="nc bnc" id="L89" title="All 2 branches missed.">							}else if(moneyMover == 2) {</span>
+<span class="nc" id="L90">								System.out.println(&quot;How much do you wish to deposit?&quot;);</span>
+<span class="nc" id="L91">								double moneyAmount = scan.nextDouble();</span>
+<span class="nc" id="L92">								as.withdrawMoneyFromAccount(accountOption, moneyAmount);</span>
+								
+<span class="nc bnc" id="L94" title="All 2 branches missed.">							}else if(moneyMover == 3) {</span>
+<span class="nc" id="L95">								System.out.println(&quot;How much do you wish to transfer?&quot;);</span>
+<span class="nc" id="L96">								double moneyAmount = scan.nextDouble();</span>
+<span class="nc" id="L97">								System.out.println(&quot;What account number do you wish to transfer to?&quot;);</span>
+<span class="nc" id="L98">								int recievingAcc = scan.nextInt();</span>
+<span class="nc bnc" id="L99" title="All 2 branches missed.">								if(moneyAmount &gt; as.checkBalance(accountOption)) {</span>
+<span class="nc" id="L100">									as.transferMoneyToAccount(accountOption, moneyAmount, recievingAcc);</span>
+								}else {
+<span class="nc" id="L102">									System.out.println(&quot;Please do not tranfer more than the account has.&quot;);</span>
+								}
+								
+								
+								
+<span class="nc" id="L107">							}else {</span>
+<span class="nc" id="L108">								System.out.println(&quot;Please select a valid option.&quot;);</span>
+							}
+							
+							
+<span class="nc bnc" id="L112" title="All 2 branches missed.">						}else if(!as.checkActiveAccount(accountOption)){</span>
+<span class="nc" id="L113">							System.out.println(&quot;This account has not been activated yet.&quot;);</span>
+						}else {
+<span class="nc" id="L115">							System.out.println(&quot;How did you even get here?&quot;);</span>
+						}
+						
+<span class="nc bnc" id="L118" title="All 2 branches missed.">					}else if(!as.checkAccount(loggedInUser.getId(), accountOption)) {</span>
+						
+<span class="nc" id="L120">						System.out.println(&quot;Please select an account registered to this user.&quot;);</span>
+						
+					}else {
+<span class="nc" id="L123">						System.out.println(&quot;How did you even get here?&quot;);</span>
+					}
+					
+					
+<span class="nc" id="L127">				} else {</span>
+<span class="nc" id="L128">					System.out.println(&quot;I'm sorry that wasnt a valid option. Please try again.&quot;);</span>
+				}
+<span class="nc" id="L130">				System.out.println(&quot;If you would like to open an account press 1, if you would like to view your accounts press 2. Press 0 to close.&quot;);</span>
+			}
+<span class="nc bnc" id="L132" title="All 2 branches missed.">			}else if(loggedInUser.getRole() == Role.Employee) {</span>
+				
+<span class="nc" id="L134">				System.out.println(&quot;Press 1 to view all accounts, or press 2 to approve/deny a specific account. Press 0 to end.&quot;);</span>
+<span class="nc" id="L135">				int accViewer = scan.nextInt();</span>
+<span class="nc bnc" id="L136" title="All 2 branches missed.">				while(accViewer != 0) {</span>
+				
+<span class="nc bnc" id="L138" title="All 2 branches missed.">				if(accViewer == 1) {</span>
+<span class="nc" id="L139">					as.viewAllAccounts();</span>
+<span class="nc bnc" id="L140" title="All 2 branches missed.">				}else if(accViewer == 2) {</span>
+<span class="nc" id="L141">					System.out.println(&quot;Please enter the account number of the account you would like to view.&quot;);</span>
+					
+<span class="nc" id="L143">					int specId = scan.nextInt();</span>
+<span class="nc" id="L144">					as.viewAllAccounts(specId);</span>
+<span class="nc" id="L145">					System.out.println(&quot;Please enter 1 to approve the account or 2 to deny the account.&quot;);</span>
+					
+<span class="nc" id="L147">					int activeChecker = scan.nextInt();</span>
+					
+<span class="nc bnc" id="L149" title="All 2 branches missed.">					if(activeChecker == 1) {</span>
+<span class="nc" id="L150">						as.setAccActive(specId, true);</span>
+<span class="nc bnc" id="L151" title="All 2 branches missed.">					}else if (activeChecker == 2) {</span>
+<span class="nc" id="L152">						as.setAccActive(specId, false);</span>
+					}else {
+<span class="nc" id="L154">						System.out.println(&quot;Not a valid action for the account&quot;);</span>
+					}
+					
+<span class="nc" id="L157">				}else {</span>
+<span class="nc" id="L158">					System.out.println(&quot;Please enter one of the listed options.&quot;);</span>
+				}
+				}
+				
+<span class="nc bnc" id="L162" title="All 2 branches missed.">			}else if(loggedInUser.getRole() == Role.Admin) {</span>
+<span class="nc" id="L163">				int nextCheck = -1;</span>
+<span class="nc bnc" id="L164" title="All 2 branches missed.">				while(nextCheck != 0)</span>
+<span class="nc" id="L165">				System.out.println(&quot;Please enter 1 to view all accounts, 2 to access a specific account. Press 0 to exit.&quot;);</span>
+<span class="nc" id="L166">				nextCheck = scan.nextInt();</span>
+<span class="nc bnc" id="L167" title="All 2 branches missed.">				if(nextCheck == 1) {</span>
+					
+<span class="nc" id="L169">					as.viewAllAccounts();</span>
+					
+<span class="nc bnc" id="L171" title="All 2 branches missed.">				}else if(nextCheck == 2) {</span>
+					
+<span class="nc" id="L173">					System.out.println(&quot;Select the id of the account you wish to change.&quot;);</span>
+<span class="nc" id="L174">					int adminId = scan.nextInt();</span>
+<span class="nc" id="L175">					System.out.println(&quot;Press 1 to approve/deny, 2 to withdraw/deposit/transfer, 3 to cancel account.&quot;);</span>
+<span class="nc" id="L176">					int adminChoice = scan.nextInt();</span>
+<span class="nc bnc" id="L177" title="All 2 branches missed.">					if(adminChoice == 1) {</span>
+						
+<span class="nc" id="L179">						System.out.println(&quot;Please enter 1 to approve the account or 2 to deny the account.&quot;);</span>
+						
+<span class="nc" id="L181">						int activeChecker = scan.nextInt();</span>
+						
+<span class="nc bnc" id="L183" title="All 2 branches missed.">						if(activeChecker == 1) {</span>
+<span class="nc" id="L184">							as.setAccActive(adminId, true);</span>
+<span class="nc bnc" id="L185" title="All 2 branches missed.">						}else if (activeChecker == 2) {</span>
+<span class="nc" id="L186">							as.setAccActive(adminId, false);</span>
+						}else {
+<span class="nc" id="L188">							System.out.println(&quot;Not a valid action for the account&quot;);</span>
+						}
+						
+<span class="nc bnc" id="L191" title="All 2 branches missed.">					}else if(adminChoice == 2) {</span>
+						
+<span class="nc" id="L193">						System.out.println(&quot;Please press 1 to withdraw, 2 to deposit or 3 to transfer.&quot;);</span>
+<span class="nc" id="L194">						int nextChoice = scan.nextInt();</span>
+<span class="nc bnc" id="L195" title="All 2 branches missed.">						if(nextChoice == 1) {</span>
+<span class="nc" id="L196">							System.out.println(&quot;How much would you like to withdraw?&quot;);</span>
+<span class="nc" id="L197">							double adminWithdraw = scan.nextDouble();</span>
+							
+<span class="nc" id="L199">							as.withdrawMoneyFromAccount(adminId, adminWithdraw);</span>
+							
+<span class="nc bnc" id="L201" title="All 2 branches missed.">						}else if(nextChoice == 2) {</span>
+							
+<span class="nc" id="L203">							System.out.println(&quot;How much would you like to deposit?&quot;);</span>
+<span class="nc" id="L204">							double adminDeposit = scan.nextDouble();</span>
+							
+<span class="nc" id="L206">							as.addMoneyToAccount(adminId, adminDeposit);</span>
+							
+<span class="nc bnc" id="L208" title="All 2 branches missed.">						}else if(nextChoice == 3) {</span>
+							
+<span class="nc" id="L210">							System.out.println(&quot;How much would you like to transfer?&quot;);</span>
+<span class="nc" id="L211">							double adminTransfer = scan.nextDouble();</span>
+<span class="nc" id="L212">							System.out.println(&quot;Please list the account ID for the money to be transferred to.&quot;);</span>
+<span class="nc" id="L213">							int adminNextAcc = scan.nextInt();</span>
+							
+<span class="nc" id="L215">							as.transferMoneyToAccount(adminId, adminNextAcc, adminNextAcc);</span>
+							
+<span class="nc" id="L217">						}else {</span>
+<span class="nc" id="L218">							System.out.println(&quot;That was not a valid option for the account.&quot;);</span>
+						}
+						
+						
+<span class="nc bnc" id="L222" title="All 2 branches missed.">					}else if(adminChoice == 3) {</span>
+						
+<span class="nc" id="L224">						System.out.println(&quot;Confirm to cancel account with ID &quot; + adminId + &quot;. Press 1 to confirm.&quot;);</span>
+<span class="nc" id="L225">						int adminConfirm = scan.nextInt();</span>
+						
+<span class="nc bnc" id="L227" title="All 2 branches missed.">						if(adminConfirm == 1) {</span>
+							
+<span class="nc" id="L229">							as.deleteAcc(adminId);</span>
+							
+<span class="nc" id="L231">							System.out.println(&quot;Account with &quot; + adminId + &quot; has been canceled.&quot;);</span>
+							
+						}else {
+<span class="nc" id="L234">							System.out.println(&quot;Request not confirmed account with ID &quot; + adminId + &quot; not canceled.&quot;);</span>
+						}
+						
+<span class="nc" id="L237">					}else {</span>
+<span class="nc" id="L238">						System.out.println(&quot;Please choose a valid option.&quot;);</span>
+					}
+					
+<span class="nc" id="L241">				}else {</span>
+<span class="nc" id="L242">					System.out.println(&quot;Please enter a listed option.&quot;);</span>
+				}
+				
+				
+<span class="nc" id="L246">			}else {</span>
+<span class="nc" id="L247">				System.out.println(&quot;Unrecognized user role.&quot;);</span>
+			}
+
+<span class="nc bnc" id="L250" title="All 2 branches missed.">		} else if (input == 2) {</span>
+
+<span class="nc" id="L252">			System.out.println(&quot;Please enter a username&quot;);</span>
+<span class="nc" id="L253">			String username = scan.next();</span>
+
+<span class="nc" id="L255">			System.out.println(&quot;Please enter a password&quot;);</span>
+<span class="nc" id="L256">			String password = scan.next();</span>
+
+<span class="nc" id="L258">			User u = new User(username, password, Role.Customer, null);</span>
+
+<span class="nc" id="L260">			us.register(u);</span>
+<span class="nc" id="L261">		} else {</span>
+<span class="nc" id="L262">			System.out.println(&quot;I'm sorry that wasnt a valid option. Please hang up and try again.&quot;);</span>
+		}
+
+<span class="nc" id="L265">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

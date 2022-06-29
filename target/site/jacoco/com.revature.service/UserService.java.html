@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">BankApp</a> &gt; <a href="index.source.html" class="el_package">com.revature.service</a> &gt; <span class="el_source">UserService.java</span></div><h1>UserService.java</h1><pre class="source lang-java linenums">package com.revature.service;
+
+import org.apache.log4j.Logger;
+
+import com.revature.dao.AccountDao;
+import com.revature.dao.IAccountDao;
+import com.revature.dao.IUserDao;
+import com.revature.dao.UserDao;
+import com.revature.exceptions.RegisterUserFailedException;
+import com.revature.models.Account;
+import com.revature.models.User;
+
+<span class="fc" id="L13">public class UserService {</span>
+
+<span class="fc" id="L15">	public IUserDao udao = new UserDao();</span>
+<span class="fc" id="L16">	public IAccountDao adao = new AccountDao();</span>
+<span class="fc" id="L17">	Logger logger = Logger.getLogger(UserService.class);</span>
+
+	public User register(User u) {
+
+<span class="fc" id="L21">		System.out.println(&quot;Registering user....&quot;);</span>
+
+		// Let's make sure the registering user has an id of 0 before trying to register
+		// This is just an additional layer of data validation
+
+<span class="fc bfc" id="L26" title="All 2 branches covered.">		if (u.getId() != 0) {</span>
+<span class="fc" id="L27">			throw new RegisterUserFailedException(&quot;User not valid to register because Id was not 0&quot;);</span>
+		}
+
+		// If the id is 0, we can call the dao to create a new object
+
+<span class="fc" id="L32">		int generatedId = udao.insert(u);</span>
+
+		// Let's do some checking before finishing
+
+<span class="pc bpc" id="L36" title="1 of 4 branches missed.">		if (generatedId != -1 &amp;&amp; generatedId != u.getId()) {</span>
+<span class="fc" id="L37">			u.setId(generatedId);</span>
+		} else {
+<span class="fc" id="L39">			throw new RegisterUserFailedException(&quot;User's Id was either -1 or did not change after insertion&quot;);</span>
+		}
+
+<span class="fc" id="L42">		System.out.println(&quot;Successfully registered user with the Id of &quot; + u.getId());</span>
+		
+<span class="fc" id="L44">		logger.info(&quot;Created user account with Id &quot; + u.getId());</span>
+
+<span class="fc" id="L46">		return u;</span>
+	}
+
+	public User login(String username, String password) {
+
+		// We now need to call upon our userDAO to get us some information about the
+		// user with this specific username
+
+<span class="fc" id="L54">		User returnedUser = udao.findByUsername(username);</span>
+
+		// Check to see if returned password matches the entered password
+
+<span class="pc bpc" id="L58" title="1 of 2 branches missed.">		if (returnedUser.getPassword().equals(password)) {</span>
+
+<span class="fc" id="L60">			System.out.println(&quot;Successfully Logged in!&quot;);</span>
+
+<span class="fc" id="L62">			return returnedUser;</span>
+		}
+
+		// Otherwise the password is not equal
+<span class="nc" id="L66">		return null;</span>
+	}
+	
+	
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>
