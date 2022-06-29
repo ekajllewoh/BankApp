@@ -1,13 +1,17 @@
 package com.revature.service;
 
+import com.revature.dao.AccountDao;
+import com.revature.dao.IAccountDao;
 import com.revature.dao.IUserDao;
 import com.revature.dao.UserDao;
 import com.revature.exceptions.RegisterUserFailedException;
+import com.revature.models.Account;
 import com.revature.models.User;
 
 public class UserService {
 
 	public IUserDao udao = new UserDao();
+	public IAccountDao adao = new AccountDao();
 
 	public User register(User u) {
 
@@ -50,12 +54,13 @@ public class UserService {
 
 			System.out.println("Successfully Logged in!");
 
-			System.out.println("Reached the inside of the if statement");
 			return returnedUser;
 		}
 
 		// Otherwise the password is not equal
 		return null;
 	}
+	
+	
 
 }

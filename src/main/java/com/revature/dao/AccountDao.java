@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -16,8 +17,43 @@ import com.revature.util.ConnectionUtil;
 public class AccountDao implements IAccountDao {
 
 	public int insert(Account a) {
-		// TODO Auto-generated method stub
-		return 0;
+		
+		Connection conn = ConnectionUtil.getConnection();
+		
+		String sql = "INSERT INTO accounts (acc_owner) VALUES (?) RETURNING accounts.id";
+
+		try {
+			PreparedStatement stmt = conn.prepareStatement(sql);
+			
+			
+			
+			stmt.setInt(1, a.getAccOwner());
+			
+
+			
+			
+			ResultSet rs;
+			
+			if ((rs = stmt.executeQuery()) != null) {
+				
+				
+				rs.next();
+				
+				
+				int id = rs.getInt(1); 
+				
+				System.out.println("We returned an account with id #" + id);
+				
+				return id;
+			}
+			
+			
+		} catch (SQLException e) {
+			System.out.println("Unable to insert account - sql exception");
+			e.printStackTrace();
+		}
+		
+		return -1;
 	}
 
 	public List<Account> findAll() {
@@ -71,11 +107,11 @@ public class AccountDao implements IAccountDao {
 		
 		try (Connection conn = ConnectionUtil.getConnection()){
 			
-			String sql = "SELECT * FROM account WHERE username = ?";
+			String sql = "SELECT * FROM accounts WHERE acc_owner = ?";
 			
 			PreparedStatement stmt = conn.prepareStatement(sql);
 			
-			stmt.setString(1, username);
+			stmt.setInt(1, id);
 			
 			ResultSet rs;
 			
@@ -84,29 +120,69 @@ public class AccountDao implements IAccountDao {
 				// Move the cursor forward
 				rs.next();
 				
-				int id = rs.getInt("id");
-				String returnedUsername = rs.getString("username");
-				String password = rs.getString("pwd");
-				Role role = Role.valueOf(rs.getString("user_role"));
+				int returnedId = rs.getInt("id");
+				int accOwner = rs.getInt("acc_owner");
+				double balance = rs.getDouble("balance");
+				boolean activity = rs.getBoolean("active");
 				
-				a.setId(id);
-				a.setUsername(returnedUsername);
-				a.setPassword(password);
-				a.setRole(role);
+				a.setId(returnedId);
+				a.setAccOwner(accOwner);
+				a.setBalance(balance);
+				a.setActive(activity);
 				
 			} 
 		} catch (SQLException e) {
-			System.out.println("SQL Exception Thrown - can't retrieve user from DB");
+			System.out.println("SQL Exception Thrown - can't retrieve account from DB");
 			e.printStackTrace();
 		}
 		
 		
-		return u;
+		return a;
 	}
 
 	public List<Account> findByOwner(int accOwnerId) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		// Instantiate a linkedlist to store all of the objects that we retrieve
+		List<Account> accList = new LinkedList<Account>();
+
+		// Obtain a connection using try with resources
+
+		try (Connection conn = ConnectionUtil.getConnection()) {
+			
+			// Let's create our SQL query
+			String sql = "SELECT * FROM accounts WHERE acc_owner = ?";
+			
+			PreparedStatement stmt = conn.prepareStatement(sql);
+			
+			stmt.setInt(1, accOwnerId);
+
+			// We'll return all of the data queried so we need a ResultSet obj to iterate
+			// over it
+			ResultSet rs = stmt.executeQuery();
+
+			// Open a while loop to get all the info
+			while (rs.next()) {
+
+				// Gather the id of the accounts, balance, accOwnerId, and isActive
+				int id = rs.getInt("id"); // Capture the value in the id column
+				double balance = rs.getDouble("balance");
+				int retAccOwnerId = rs.getInt("acc_owner");
+				boolean isActive = rs.getBoolean("active");
+
+				// Let's create an Account object to store all of this
+
+				Account a = new Account(id, balance, retAccOwnerId, isActive);
+
+				accList.add(a);
+
+			}
+
+		} catch (SQLException e) {
+			System.out.println("Unable to retrieve accounts due to SQL Exception");
+			e.printStackTrace();
+		}
+
+		return accList;
 	}
 
 	public boolean update(Account a) {
@@ -120,7 +196,7 @@ public class AccountDao implements IAccountDao {
 
 		try (Connection conn = ConnectionUtil.getConnection()) {
 
-			String sql = "UPDATE * SET acc_owner = ?, active = ?, balance = ? WHERE id = ?";
+			String sql = "UPDATE accounts SET acc_owner = ?, active = ?, balance = ? WHERE id = ?";
 
 			PreparedStatement stmt = conn.prepareStatement(sql);
 

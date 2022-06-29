@@ -206,7 +206,7 @@ public class UserDao implements IUserDao{
 		
 		try (Connection conn = ConnectionUtil.getConnection()){
 			
-			String sql = "UPDATE * SET username = ?, pwd = ? WHERE id = ?";
+			String sql = "UPDATE users SET username = ?, pwd = ? WHERE id = ?";
 			
 			PreparedStatement stmt = conn.prepareStatement(sql);
 			
